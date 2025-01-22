@@ -49,3 +49,53 @@ O pipeline:
 
 - O arquivo `service-account.json` contém credenciais sensíveis e não deve ser versionado
 - As credenciais são montadas como volume somente leitura no container
+
+## Regras aplicadas na tabela Trusted
+
+Tabela Trusted
+
+Na camada Trusted, foram aplicadas as seguintes regras:
+
+Tipagem e conversão de dados:
+
+As colunas foram convertidas para os tipos de dados apropriados, como FLOAT64 para valores numéricos, DATE para datas e TIMESTAMP para carimbos de tempo.
+Valores nulos e inválidos (como NaN) foram tratados para evitar inconsistências. Valores numéricos inválidos foram substituídos por 0 ou NULL, dependendo do contexto.
+Sanitização de dados:
+
+Os nomes das colunas foram sanitizados para manter um padrão compatível com o BigQuery (uso de letras minúsculas, substituição de caracteres especiais por "_", etc.).
+Apenas os dados relevantes foram mantidos, descartando registros e colunas desnecessárias.
+Tabela Refined
+
+## Regras aplicadas na tabela Refined
+
+Agregação temporal:
+
+Os dados foram agregados por ano_mes, combinando diferentes períodos em uma única chave para facilitar análises mensais.
+Cálculo de variação percentual:
+
+Foram calculadas variações percentuais nos índices ICC e ICF com base no mês anterior, considerando valores válidos.
+Em caso de ausência de dados no mês anterior, o resultado da variação foi definido como NULL.
+Enriquecimento de dados:
+
+Dados de ICC e ICF foram combinados em uma única tabela para fornecer uma visão unificada dos índices.
+Adicionada uma coluna de carimbo de tempo (load_timestamp) para rastreamento da última atualização dos dados.
+
+## Decisões técnicas tomadas
+
+1- Arquitetura em três camadas (Raw, Trusted e Refined):
+Optou-se por uma arquitetura modular para separar dados brutos, limpos e transformados, garantindo maior flexibilidade e clareza nos processos de ETL.
+
+2- Tratamento de dados nulos e inválidos:
+Para garantir a consistência das análises, dados nulos e inválidos foram substituídos por valores padrão (0 ou NULL), dependendo do contexto.
+
+3- Automatização de download com Selenium:
+O uso do Selenium permitiu a automação do download de planilhas diretamente do site da Fecomércio, reduzindo o esforço manual.
+
+4- Sanitização de nomes de colunas:
+Para evitar problemas de compatibilidade com o BigQuery, os nomes das colunas foram sanitizados, garantindo conformidade com os padrões exigidos.
+
+5- Adoção de UUID para datasets:
+Foi implementado um identificador único para os datasets, permitindo múltiplas execuções do pipeline sem sobrescrever dados previamente armazenados.
+
+6- Cálculo de métricas derivadas na camada Refined:
+A lógica de cálculos foi centralizada na camada Refined para facilitar futuras atualizações e garantir a consistência das análises.
