@@ -1,0 +1,6 @@
+pandas
+selenium
+google-cloud-bigquery
+openpyxl
+pyarrow
+uuid

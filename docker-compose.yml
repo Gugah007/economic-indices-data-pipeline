@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    volumes:
+      - ./service-account.json:/app/service-account.json:ro
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
